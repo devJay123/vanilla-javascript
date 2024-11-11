@@ -1,4 +1,4 @@
-// Component
+///// Component /////
 export class Component {
   constructor(payload = {}) {
     const { tagName = "div", state = {}, props = {} } = payload;
@@ -12,7 +12,7 @@ export class Component {
   }
 }
 
-// Router
+///// Router /////
 function routeRender(routes) {
   if (!location.hash) {
     history.replaceState(null, "", "/#/");
@@ -50,4 +50,27 @@ export function createRouter(routes) {
     });
     routeRender(routes); // 최초 호출. popstate는 처음에 동작x
   };
+}
+
+///// Store /////
+export class Store {
+  constructor(state) {
+    this.state = {};
+    this.observers = {};
+    for (const key in state) {
+      Object.defineProperty(this.state, key, {
+        get: () => {
+          return state[key]; // state['message']
+        },
+        set: (val) => {
+          state[key] = val;
+          this.observers[key]();
+        },
+      });
+    }
+  }
+
+  subscribe(key, cb) {
+    this.observers[key] = cb;
+  }
 }
