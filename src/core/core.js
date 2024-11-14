@@ -64,13 +64,16 @@ export class Store {
         },
         set: (val) => {
           state[key] = val;
-          this.observers[key]();
+          this.observers[key].forEach((observer) => observer(val));
         },
       });
     }
   }
 
   subscribe(key, cb) {
-    this.observers[key] = cb;
+    // {message: [cb1, cb2, cb3 ...]}
+    Array.isArray(this.observers[key])
+      ? this.observers[key].push(cb)
+      : (this.observers[key] = [cb]); // cb = 콜백함수
   }
 }
